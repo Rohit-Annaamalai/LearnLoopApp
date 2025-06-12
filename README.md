@@ -30,9 +30,12 @@
 
 ## 📸 Preview
 
-| Home Screen | Settings| XP Dashboard | Add Topic |
-|-------------|------------------|--------------|--------------|--------------|
+## 📸 Preview
+
+| Home Screen | Settings | XP Dashboard | Add Topic |
+|-------------|----------|--------------|-----------|
 | ![Home](screenshots/home_screen.png) | ![Settings](screenshots/settings_screen.png) | ![XP](screenshots/xp_dashboard_screen.png) | ![Add Topic](screenshots/add_topic_screen.png) |
+
 
 
 ---
