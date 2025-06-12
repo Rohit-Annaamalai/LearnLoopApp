@@ -32,9 +32,8 @@
 
 | Home Screen | Add Topic Dialog | Daily Review | XP Dashboard | Topic Detail |
 |-------------|------------------|--------------|--------------|--------------|
-| ![Home](screenshots/home.png) | ![Dialog](screenshots/dialog.png) | ![Review](screenshots/review.png) | ![XP](screenshots/xp.png) | ![Detail](screenshots/detail.png) |
+| ![Home](screenshots/home_screen.png) | ![Settings](screenshots/settings_screen.png) | ![XP](screenshots/xp_dashboard_screen.png) | ![Add Topic](screenshots/add_topic_screen.png) |
 
-> (*Add your screenshots to a `screenshots/` folder in the repo*)
 
 ---
 
