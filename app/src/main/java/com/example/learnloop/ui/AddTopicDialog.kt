@@ -1,64 +1,105 @@
 package com.example.learnloop.ui
 
 import android.app.DatePickerDialog
-import android.app.Dialog
 import android.content.Context
-import android.os.Bundle
-import android.view.LayoutInflater
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import com.example.learnloop.data.Topic
-import com.example.learnloop.databinding.DialogAddTopicBinding
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.*
 
-class AddTopicDialog(
-    context: Context,
-    private val onSave: (Topic) -> Unit
-) : Dialog(context) {
+@Composable
+fun AddTopicDialog(
+    onDismiss: () -> Unit,
+    onSave: (Topic) -> Unit
+) {
+    val context = LocalContext.current
+    var name by remember { mutableStateOf("") }
+    var subject by remember { mutableStateOf("") }
+    var examDate by remember { mutableStateOf<LocalDate?>(null) }
+    val showDatePicker = remember { mutableStateOf(false) }
 
-    private lateinit var binding: DialogAddTopicBinding
-    private var selectedExamDate: Long = System.currentTimeMillis()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = DialogAddTopicBinding.inflate(LayoutInflater.from(context))
-        setContentView(binding.root)
-
-        binding.btnPickDate.setOnClickListener {
-            showDatePicker()
+    if (showDatePicker.value) {
+        showDatePickerDialog(context) { millis ->
+            examDate = Instant.ofEpochMilli(millis)
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate()
+            showDatePicker.value = false
         }
+    }
 
-        binding.btnSave.setOnClickListener {
-            val name = binding.inputName.text.toString().trim()
-            val subject = binding.inputSubject.text.toString().trim()
-
-            if (name.isNotEmpty() && subject.isNotEmpty()) {
-                val topic = Topic(
-                    name = name,
-                    subject = subject,
-                    examDate = selectedExamDate,
-                    lastReviewed = System.currentTimeMillis(),
-                    retentionScore = 100
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Add New Topic") },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Topic Name") },
+                    modifier = Modifier.fillMaxWidth()
                 )
-                onSave(topic)
-                dismiss()
-            } else {
-                binding.inputName.error = "Required"
-                binding.inputSubject.error = "Required"
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = subject,
+                    onValueChange = { subject = it },
+                    label = { Text("Subject") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(onClick = { showDatePicker.value = true }) {
+                    Text(text = examDate?.toString() ?: "Pick Exam Date")
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (name.isNotBlank() && subject.isNotBlank() && examDate != null) {
+                        val today = LocalDate.now()
+                        val newTopic = Topic(
+                            name = name,
+                            subject = subject,
+                            examDate = examDate!!,
+                            lastReviewed = today,
+                            nextReviewDate = today,
+                            retentionScore = 3.0f
+                        )
+                        onSave(newTopic)
+                        onDismiss()
+                    }
+                }
+            ) {
+                Text("Save")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
             }
         }
-    }
+    )
+}
 
-    private fun showDatePicker() {
-        val cal = Calendar.getInstance()
-        DatePickerDialog(
-            context,
-            { _, year, month, day ->
-                cal.set(year, month, day)
-                selectedExamDate = cal.timeInMillis
-                binding.txtDate.text = "${day}/${month + 1}/$year"
-            },
-            cal.get(Calendar.YEAR),
-            cal.get(Calendar.MONTH),
-            cal.get(Calendar.DAY_OF_MONTH)
-        ).show()
-    }
+fun showDatePickerDialog(context: Context, onDateSelected: (Long) -> Unit) {
+    val calendar = Calendar.getInstance()
+    DatePickerDialog(
+        context,
+        { _, year, month, day ->
+            val pickedCalendar = Calendar.getInstance().apply {
+                set(year, month, day)
+            }
+            onDateSelected(pickedCalendar.timeInMillis)
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
+    ).show()
 }

@@ -31,6 +31,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "11"
@@ -83,4 +84,12 @@ dependencies {
 
     // Optional: ConstraintLayout
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.1")
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.1") // or match your Compose BOM version
+    implementation("androidx.navigation:navigation-compose:2.7.5")
+
+
 }
